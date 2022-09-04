@@ -61,31 +61,20 @@ def GetUserByRut(ClienteRut):
             return jsonify({'mensaje':"Usuario no encontrada"})
     except Exception as ex:
         return jsonify({'mensaje':"Error"})
-
+  
 @user_blueprint.route('/user', methods=['POST'])
 def AddUser():
     try:
-        cursor = conexion.connection.cursor()
-                
-        rutUsuario = request.json["ClienteRut"]
-           
-        buscarUsuario = "SELECT COUNT(ClienteRut) FROM usuario WHERE ClienteRUt = {0}".format(rutUsuario)
-        
-        cursor.execute(buscarUsuario)
-        datos = cursor.fetchone()
-                
-        if datos[0] == 0:            
+        if request.method == 'POST':            
+            cursor = conexion.connection.cursor()
+            insertUser = """INSERT INTO usuario (ClienteRut, ClienteDV, Nombre, Apellido, TotalPuntos) 
+                VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')""".format(request.json['userRut'], request.json['userDv'], request.json['userName'], request.json['userLastName'],request.json['userPoints'])
             
-            insertarUsuario = """INSERT INTO usuario (ClienteRut, ClienteDV, Nombre, Apellido, TotalPuntos) 
-                VALUES ({0}, '{1}', '{2}', '{3}', {4})""".format(request.json["ClienteRut"], request.json["ClienteDV"], 
-                                                                 request.json["Nombre"], request.json["Apellido"], 
-                                                                 request.json["TotalPuntos"])            
-            cursor.execute(insertarUsuario)
+            print(insertUser)
+            cursor.execute(insertUser)
             conexion.connection.commit()
-            return jsonify({'mensaje':"Usuario Guardada!"})
-        else:
-            return jsonify({'mensaje':"Usuario Duplicada!"})
+            return jsonify({'mensaje':"User Added!"})
     except Exception as ex:
-        return jsonify({'mensaje':"Error!"})
+        return jsonify({'mensaje':"The user already exists"})
 
 # FIN APARTADO USUARIO
