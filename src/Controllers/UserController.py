@@ -26,12 +26,11 @@ def ListUsers():
         ## HACEMOS LA CONSULTA A LA BASE DE DATOS PARA RECUPERAR LAS EMPRESAS QUE ESTAN DISPONIBLES
         for fila in datos:
             usuario = {
-                'IdUsuario':fila[0],
-                'ClienteRut':fila[1], 
-                'ClienteDV':fila[2],
-                'Nombre':fila[3],
-                'Apellido':fila[4],
-                'TotalPuntos':fila[5]                
+                'ClienteRut':fila[0], 
+                'ClienteDV':fila[1],
+                'Nombre':fila[2],
+                'Apellido':fila[3],
+                'TotalPuntos':fila[4]                
             }
             usuarios.append(usuario)
         
@@ -49,12 +48,11 @@ def GetUserByRut(ClienteRut):
                 
         if datos != None:
             usuario = {
-                'IdUsuario':datos[0],
-                'ClienteRut':datos[1], 
-                'ClienteDV':datos[2],
-                'Nombre':datos[3],
-                'Apellido':datos[4],
-                'TotalPuntos':datos[5]                
+                'ClienteRut':datos[0], 
+                'ClienteDV':datos[1],
+                'Nombre':datos[2],
+                'Apellido':datos[3],
+                'TotalPuntos':datos[4]                
             }
             return jsonify({'usuario': usuario, 'mensaje':"Usuario Encontrado!"})
         else:

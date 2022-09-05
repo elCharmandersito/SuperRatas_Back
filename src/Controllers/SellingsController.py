@@ -1,8 +1,8 @@
-from ctypes.wintypes import PINT
 from time import time
 from flask import Flask, jsonify, request, Blueprint
 from flask_mysqldb import MySQL
 import datetime
+import json
 
 app = Flask(__name__)
 sellings_blueprint = Blueprint('sellings_blueprint', __name__)
@@ -48,16 +48,18 @@ def AddSelling(IdPublicacion):
             cursor = conexion.connection.cursor()
             
             pointsToConvert = request.json['ClientPoints']
+            print("pointsToConvert --> ", pointsToConvert)
             
             # 1. Primero buscamos al cliente y recuperamos sus puntos minimos
             searchUser = "SELECT * FROM usuario WHERE ClienteRut = '{0}'".format(request.json['ClientRut'])
             
             cursor.execute(searchUser)
             userFound = cursor.fetchone() 
+            print("USUARIO ENCONTRADO --> ", userFound)
             
             if userFound != None:   
                             
-                userTotalPoints = int(userFound[5])
+                userTotalPoints = int(userFound[4])
                 print("HASTA AQUI TODA LA INFO DE ATRAS VIENE CORRECTA")
                 print("userTotalPoints --> ", userTotalPoints)
                 
@@ -116,5 +118,6 @@ def AddSelling(IdPublicacion):
                     return jsonify({'Message':"Los puntos a convertir son 0!"})
             else:
                 return jsonify({'Message':"User not found Found!"})
+    
     except Exception as ex:
-        return jsonify({'mensaje':"Error to Add Selling"})
+        return jsonify({'mensaje':str(ex)})

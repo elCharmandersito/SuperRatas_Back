@@ -27,7 +27,7 @@ def ListPublications():
             publication = {
                 'IdPublicacion':fila[0],
                 'IdPunto':fila[1], 
-                'IdUsuario':fila[2],
+                'RutUsuario':fila[2],
                 'NombrePublicacion':fila[3],
                 'Descripcion':fila[4],
                 'PuntosMinimos':fila[5],
@@ -53,7 +53,7 @@ def GetPublicationById(IdPublicacion):
             publicacion = {
                 'IdPublicacion':datos[0],
                 'IdPunto':datos[1], 
-                'IdUsuario':datos[2],
+                'RutUsuario':datos[2],
                 'NombrePublicacion':datos[3],
                 'Descripcion':datos[4],
                 'PuntosMinimos':datos[5],
@@ -70,21 +70,28 @@ def GetPublicationById(IdPublicacion):
 @publication_blueprint.route('/publication', methods=['POST'])
 def AddPublication():
     try:        
-        cursor = conexion.connection.cursor()
-                        
-        pubName = request.json["PubName"]   
+        
+        print(request.json)
+        
+        
+        cursor = conexion.connection.cursor()                        
+        pubName = request.json["PubName"]  
+        
+      
                 
         searchPublication = "SELECT COUNT(NombrePublicacion) FROM publicacion WHERE NombrePublicacion = '{0}'".format(pubName)
-                
+        print(searchPublication)
+        
         cursor.execute(searchPublication)
         datos = cursor.fetchone()
                 
-        if datos[0] == 0:            
-            
-            insertarPublicacion = """INSERT INTO publicacion (IdPunto, IdUsuario, NombrePublicacion, Descripcion, PuntosMinimos, TasaCambio) 
-                VALUES ({0}, {1}, '{2}', '{3}', {4}, {5})""".format(request.json["IdPoint"], request.json["IdUser"], 
+        if datos[0] == 0:     
+            insertarPublicacion = """INSERT INTO publicacion (IdPunto, RutUsuario, NombrePublicacion, Descripcion, PuntosMinimos, TasaCambio) 
+                VALUES ({0}, {1}, '{2}', '{3}', {4}, {5})""".format(request.json["IdPoint"], request.json["UserRut"], 
                                                                  request.json["PubName"], request.json["Description"], 
-                                                                 request.json["MinimosPoint"], request.json["ConvertedRate"]) 
+                                                                 request.json["MinimusPoint"], request.json["ConvertedRate"]) 
+            
+            print(insertarPublicacion)
             cursor.execute(insertarPublicacion)
             conexion.connection.commit()
             return jsonify({'mensaje':"Publicacion Guardada!"})

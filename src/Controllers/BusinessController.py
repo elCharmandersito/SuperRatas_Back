@@ -51,9 +51,11 @@ def getBusinessById(IdEmpresa):
 @business_blueprint.route('/business', methods=['POST'])
 def AddBusiness():
     try:
+        print(request.json)
         if request.method == 'POST':
             cursor = conexion.connection.cursor()
             insertBusiness = "INSERT INTO empresa (Nombre) VALUES ('{0}')".format(request.json['businessName'])
+            print("insertBusiness --> " , insertBusiness)
             cursor.execute(insertBusiness)
             conexion.connection.commit()
             return jsonify({'mensaje':"Business Added!"})

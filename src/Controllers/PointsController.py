@@ -60,11 +60,13 @@ def GetPointById(IdPunto):
 
 @points_blueprint.route('/points', methods=['POST'])
 def AddPoint():
+    
+    print(request.json)
     try:
         cursor = conexion.connection.cursor()
                 
         insertarPunto = """INSERT INTO tipopunto (IdEmpresa, NombrePunto, Descripcion) 
-                VALUES ({0}, '{1}', '{2}')""".format(request.json["IdEmpresa"], request.json["NombrePunto"], request.json["Descripcion"])            
+                VALUES ({0}, '{1}', '{2}')""".format(request.json["IdBusiness"], request.json["PointName"], request.json["Description"])            
         cursor.execute(insertarPunto)
         conexion.connection.commit()
         return jsonify({'mensaje':"Tipo de Punto Guardado!"})
