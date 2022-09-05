@@ -40,13 +40,17 @@ def ListSellings():
     except Exception:
         return jsonify({'Message':"Error at Selling List Method"})
 
-@sellings_blueprint.route('/sellings', methods=['POST'])
-def AddSelling():
+@sellings_blueprint.route('/sellings/add/<IdPublicacion>', methods=['POST'])
+def AddSelling(IdPublicacion):
     try:
+        
+        print(IdPublicacion)
+        print(request.json)
+        
         if request.method == 'POST':            
             cursor = conexion.connection.cursor()
             
-            pointsToConvert = request.json['puntosConvertidos']
+            pointsToConvert = request.json['ClientPoints']
             
             # 1. Primero buscamos al cliente y recuperamos sus puntos minimos
             searchUser = "SELECT * FROM usuario WHERE ClienteRUt = '{0}'".format(request.json['rutCliente'])
@@ -60,7 +64,7 @@ def AddSelling():
                 if (pointsToConvert > 0) and (pointsToConvert <= userTotalPoints): 
                     
                     # 3. verificamos que los puntos enviados en el post cumplan con los puntos minimos de conversion de la publicacion
-                    searchPublication = "SELECT * FROM publicacion WHERE IdPublicacion = '{0}'".format(request.json['IdPublicacion'])
+                    searchPublication = "SELECT * FROM publicacion WHERE IdPublicacion = '{0}'".format(request.json['IdPub'])
                     cursor.execute(searchPublication)
                     publicationFound = cursor.fetchone()
                     
@@ -75,7 +79,7 @@ def AddSelling():
                             pointsToCLP = pointsToConvert * convertionRate
                             
                             # 5. Actualizamos la info del cliente con los nuevos puntos
-                            updateClientData = "UPDATE usuario SET TotalPuntos = {0} WHERE ClienteRut = '{1}'".format(remainingPoints, request.json['rutCliente'])
+                            updateClientData = "UPDATE usuario SET TotalPuntos = {0} WHERE ClienteRut = '{1}'".format(remainingPoints, request.json['ClientRut'])
                             cursor.execute(updateClientData)
                             conexion.connection.commit()  
                             
@@ -83,10 +87,15 @@ def AddSelling():
                             operationDate = datetime.datetime.now()
                             formatedDate = operationDate.strftime("%y-%m-%d %H:%M:%S")
                             
+                            print("Llegando al insert de la venta")
+                            
                             # 7. finalmente insertamos en la tabla de registro de ventas
                             insertSell = """INSERT INTO ventas(IdPublicacion, rutCliente, tipoPunto, puntosConvertidos, tasaConversion, valorCLP, fechaOperacion) 
-                                VALUES ({0},'{1}', {2}, {3}, {4}, {5}, '{6}')""".format(request.json['IdPublicacion'], request.json['rutCliente'],
-                                    request.json['tipoPunto'], pointsToConvert, convertionRate, pointsToCLP, formatedDate)
+                                VALUES ({0},'{1}', {2}, {3}, {4}, {5}, '{6}')""".format(request.json['IdPub'], request.json['ClientRut'],
+                                    request.json['TypePoint'], pointsToConvert, convertionRate, pointsToCLP, formatedDate)
+                            
+                            print(insertSell)
+                            
                             cursor.execute(insertSell)
                             conexion.connection.commit()  
                             

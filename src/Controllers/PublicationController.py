@@ -70,6 +70,9 @@ def GetPublicationById(IdPublicacion):
 @publication_blueprint.route('/publication', methods=['POST'])
 def AddPublication():
     try:
+        
+        print("Entre")
+        
         cursor = conexion.connection.cursor()
                 
         nombrePublicacion = request.json["Nombre"]

@@ -18,7 +18,7 @@ def UserIndex():
 def ListUsers():
     try:
         cursor = conexion.connection.cursor()
-        sql = "SELECT * FROM usuario"
+        sql = "SELECT * FROM usuario WHERE Desactivado = 0"
         cursor.execute(sql)
         datos = cursor.fetchall()
         usuarios=[]
@@ -76,5 +76,28 @@ def AddUser():
             return jsonify({'mensaje':"User Added!"})
     except Exception as ex:
         return jsonify({'mensaje':"The user already exists"})
+
+@user_blueprint.route('/user/<ClienteRut>', methods=['DELETE'])
+def DeleteBusiness(ClienteRut):
+    try:
+        cursor = conexion.connection.cursor()
+
+        existClient = "SELECT * FROM usuario WHERE ClienteRut = '{}'".format(ClienteRut)
+        cursor.execute(existClient)
+
+        isEnableResult = cursor.fetchone()
+        print(isEnableResult)
+
+        if isEnableResult[0] != None:
+            deleteUser = "UPDATE usuario SET Desactivado = 1 WHERE ClienteRut = {0}".format(ClienteRut)
+            print(deleteUser)
+            cursor.execute(deleteUser)
+            conexion.connection.commit()
+            return jsonify({'message':"User Deleted!"})
+        else:
+            return jsonify({'message':"User not found!!"})
+    except Exception as ex:
+        return jsonify({'message':"Error in User Delete Method!"})
+
 
 # FIN APARTADO USUARIO
