@@ -53,7 +53,7 @@ def AddBusiness():
     try:
         if request.method == 'POST':
             cursor = conexion.connection.cursor()
-            insertBusiness = "INSERT INTO empresa (Nombre) VALUES ('{0}')".format(request.json)
+            insertBusiness = "INSERT INTO empresa (Nombre) VALUES ('{0}')".format(request.json['businessName'])
             cursor.execute(insertBusiness)
             conexion.connection.commit()
             return jsonify({'mensaje':"Business Added!"})
@@ -83,7 +83,8 @@ def DeleteBusiness(IdEmpresa):
         return jsonify({'message':"Error in Business Delete Method!"})
 
 @business_blueprint.route('/business/<IdEmpresa>', methods=['PUT'])
-def UpdateBusiness(IdEmpresa):
+def UpdateBusiness(IdEmpresa):    
+    
     try:
         cursor = conexion.connection.cursor()
         findBusiness = "SELECT * FROM empresa WHERE IdEmpresa = {0}".format(IdEmpresa)
@@ -92,7 +93,7 @@ def UpdateBusiness(IdEmpresa):
         businessFound = cursor.fetchone()
 
         if businessFound != None:
-            updateBusiness = "UPDATE empresa SET Nombre = '{0}' WHERE IdEmpresa = {1}".format(request.json["Nombre"], IdEmpresa)
+            updateBusiness = "UPDATE empresa SET Nombre = '{0}' WHERE IdEmpresa = {1}".format(request.json["businessName"], IdEmpresa)
             print(updateBusiness)
             cursor.execute(updateBusiness)
             conexion.connection.commit()
@@ -101,6 +102,7 @@ def UpdateBusiness(IdEmpresa):
             return jsonify({'Message':"Business not Found!"})
     except Exception as ex:
         return jsonify({'Message':ex})
+
 
 
 # FIN APARTADO EMPRESAS

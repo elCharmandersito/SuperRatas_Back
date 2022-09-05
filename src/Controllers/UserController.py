@@ -61,21 +61,24 @@ def GetUserByRut(ClienteRut):
             return jsonify({'mensaje':"Usuario no encontrada"})
     except Exception as ex:
         return jsonify({'mensaje':"Error"})
-  
+
 @user_blueprint.route('/user', methods=['POST'])
 def AddUser():
     try:
-        if request.method == 'POST':            
+        print(request.json)
+        if request.method == 'POST':
+            print(request.method)
             cursor = conexion.connection.cursor()
             insertUser = """INSERT INTO usuario (ClienteRut, ClienteDV, Nombre, Apellido, TotalPuntos) 
-                VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')""".format(request.json['userRut'], request.json['userDv'], request.json['userName'], request.json['userLastName'],request.json['userPoints'])
+                VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')""".format(request.json['userRut'], request.json['userDv'], 
+                                                                     request.json['userName'], request.json['userLastName'],request.json['userPoints'])
             
             print(insertUser)
             cursor.execute(insertUser)
             conexion.connection.commit()
             return jsonify({'mensaje':"User Added!"})
     except Exception as ex:
-        return jsonify({'mensaje':"The user already exists"})
+        return jsonify({'mensaje':"ERROR"})
 
 @user_blueprint.route('/user/<ClienteRut>', methods=['DELETE'])
 def DeleteBusiness(ClienteRut):

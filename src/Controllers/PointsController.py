@@ -76,7 +76,7 @@ def DeletePoint(IdPunto):
     try:        
         cursor = conexion.connection.cursor()
         
-        isEnable = "SELECT Desactivado FROM tipopunto WHERE IdPunto = '{}'".format(IdPunto)
+        isEnable = "SELECT Desactivado FROM tipopunto WHERE IdPunto = '{0}'".format(IdPunto)
         cursor.execute(isEnable)
         
         isEnableResult = cursor.fetchone()

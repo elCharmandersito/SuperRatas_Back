@@ -69,25 +69,22 @@ def GetPublicationById(IdPublicacion):
 
 @publication_blueprint.route('/publication', methods=['POST'])
 def AddPublication():
-    try:
-        
-        print("Entre")
-        
+    try:        
         cursor = conexion.connection.cursor()
+                        
+        pubName = request.json["PubName"]   
                 
-        nombrePublicacion = request.json["Nombre"]
-           
-        buscarPublicacion = "SELECT COUNT(Nombre) FROM publicacion WHERE Nombre = {0}".format(nombrePublicacion)
-        
-        cursor.execute(buscarPublicacion)
+        searchPublication = "SELECT COUNT(NombrePublicacion) FROM publicacion WHERE NombrePublicacion = '{0}'".format(pubName)
+                
+        cursor.execute(searchPublication)
         datos = cursor.fetchone()
                 
         if datos[0] == 0:            
             
-            insertarPublicacion = """INSERT INTO publicacion (IdPunto, Descripcion, PuntosMinimos, TasaCambio, Estado, Deleted, IdUsuario, Nombre) 
-                VALUES ({0}, '{1}', {2}, {3}, '{4}', {5}, {6}, '{7}')""".format(request.json["IdPunto"], request.json["Descripcion"], 
-                                                                 request.json["PuntosMinimos"], request.json["TasaCambio"], 
-                                                                 request.json["Estado"], request.json["Deleted"], request.json["IdUsuario"], request.json["Nombre"])            
+            insertarPublicacion = """INSERT INTO publicacion (IdPunto, IdUsuario, NombrePublicacion, Descripcion, PuntosMinimos, TasaCambio) 
+                VALUES ({0}, {1}, '{2}', '{3}', {4}, {5})""".format(request.json["IdPoint"], request.json["IdUser"], 
+                                                                 request.json["PubName"], request.json["Description"], 
+                                                                 request.json["MinimosPoint"], request.json["ConvertedRate"]) 
             cursor.execute(insertarPublicacion)
             conexion.connection.commit()
             return jsonify({'mensaje':"Publicacion Guardada!"})
@@ -96,7 +93,7 @@ def AddPublication():
     except Exception as ex:
         return jsonify({'mensaje':"Error!"})
 
-@publication_blueprint.route('/publication/<IdPublicacion>/off', methods={'PUT'})
+@publication_blueprint.route('/publication/<IdPublicacion>', methods={'DELETE'})
 def DeletePublication(IdPublicacion):
     try:        
         cursor = conexion.connection.cursor()
@@ -108,14 +105,14 @@ def DeletePublication(IdPublicacion):
         
         if isEnableResult[0] == 0: # PUEDE DESACTIVARSE POR QUE ESTA ACTIVO 
             cursor = conexion.connection.cursor()      
-            desactivarPublicacion = "UPDATE publicacion SET Desactivado = !Desactivado WHERE IdPunto = {0}".format(IdPublicacion)        
+            desactivarPublicacion = "UPDATE publicacion SET Desactivado = !Desactivado WHERE IdPublicacion = {0}".format(IdPublicacion)        
             cursor.execute(desactivarPublicacion)
         
             conexion.connection.commit()
             return jsonify({'mensaje':"Publicacion Eliminada!"}) 
         else:
             cursor = conexion.connection.cursor()      
-            desactivarPublicacion = "UPDATE publicacion SET Desactivado = !Desactivado WHERE IdPunto = {0}".format(IdPublicacion)        
+            desactivarPublicacion = "UPDATE publicacion SET Desactivado = !Desactivado WHERE IdPublicacion = {0}".format(IdPublicacion)        
             cursor.execute(desactivarPublicacion)
         
             conexion.connection.commit()
