@@ -18,7 +18,7 @@ def PublicationIndex():
 def ListPublications():
     try:
         cursor = conexion.connection.cursor()
-        getAllActivePublication = "SELECT * FROM publicacion WHERE Desactivado = 0"
+        getAllActivePublication = "SELECT * FROM publicacion WHERE Desactivado = 0 AND Estado = 'publicado'"
         cursor.execute(getAllActivePublication)
         publicationsList = cursor.fetchall()
         publicationsArr=[]
@@ -70,14 +70,10 @@ def GetPublicationById(IdPublicacion):
 @publication_blueprint.route('/publication', methods=['POST'])
 def AddPublication():
     try:        
-        
-        print(request.json)
-        
+        print("Request --> ", request.json)        
         
         cursor = conexion.connection.cursor()                        
-        pubName = request.json["PubName"]  
-        
-      
+        pubName = request.json["PubName"]
                 
         searchPublication = "SELECT COUNT(NombrePublicacion) FROM publicacion WHERE NombrePublicacion = '{0}'".format(pubName)
         print(searchPublication)
@@ -86,10 +82,11 @@ def AddPublication():
         datos = cursor.fetchone()
                 
         if datos[0] == 0:     
+            print("dentro del if")
             insertarPublicacion = """INSERT INTO publicacion (IdPunto, RutUsuario, NombrePublicacion, Descripcion, PuntosMinimos, TasaCambio) 
-                VALUES ({0}, {1}, '{2}', '{3}', {4}, {5})""".format(request.json["IdPoint"], request.json["UserRut"], 
+                VALUES ({0}, '{1}', '{2}', '{3}', {4}, {5})""".format(request.json["IdPoint"], request.json["UserRut"], 
                                                                  request.json["PubName"], request.json["Description"], 
-                                                                 request.json["MinimusPoint"], request.json["ConvertedRate"]) 
+                                                                 request.json["MinimosPoint"], request.json["ConvertedRate"]) 
             
             print(insertarPublicacion)
             cursor.execute(insertarPublicacion)
